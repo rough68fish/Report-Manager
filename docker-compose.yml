@@ -1,0 +1,74 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: catalog_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-report_catalog}
+      POSTGRES_USER: ${POSTGRES_USER:-catalog}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-catalog_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-catalog}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  oracle:
+    image: container-registry.oracle.com/database/free:latest
+    container_name: catalog_oracle
+    environment:
+      ORACLE_PWD: ${ORACLE_PASSWORD:-catalog_password}
+      ORACLE_CHARACTERSET: AL32UTF8
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+      - ./oracle-init:/docker-entrypoint-initdb.d
+    ports:
+      - "1521:1521"
+    healthcheck:
+      test: ["CMD", "/opt/oracle/checkDBStatus.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 180s
+
+  api:
+    build:
+      context: ./api
+      target: development
+    container_name: catalog_api
+    env_file: .env
+    environment:
+      PORT: 3001
+      NODE_ENV: development
+    volumes:
+      - ./api:/app
+      - api_node_modules:/app/node_modules
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: npm run dev
+
+  app:
+    build:
+      context: ./app
+      target: development
+    container_name: catalog_app
+    env_file: .env
+    volumes:
+      - ./app:/app
+      - app_node_modules:/app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+  oracle_data:
+  api_node_modules:
+  app_node_modules:

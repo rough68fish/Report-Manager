@@ -1,6 +1,6 @@
 # Report & Dashboard Catalog — Application Design Document
 
-March 2026 | v1.1
+March 2026 | v1.2
 
 ---
 
@@ -57,8 +57,8 @@ The catalog is a standalone web application that sits alongside — but is not b
 | Component | Technology | Responsibility |
 |-----------|------------|----------------|
 | React SPA | React 18, TypeScript, Tailwind CSS, React Query | Staff-facing browse, search, admin, and publish UI |
-| API Server | Node.js 22, Express, TypeScript, Prisma ORM | Business logic, auth, orchestrates all integrations |
-| Database | PostgreSQL 16 | Source of truth for all report metadata and taxonomy |
+| API Server | Node.js 22, Express, TypeScript, TypeORM    | Business logic, auth, orchestrates all integrations |
+| Database | Oracle (production) / PostgreSQL (dev) | Source of truth for all report metadata and taxonomy |
 | Search Engine | Elastic Cloud (existing) | Powers full-text and semantic (vector) search |
 | Job Queue | BullMQ + Redis | Handles async Elastic sync and Drupal publish jobs |
 | Drupal 10 | JSON:API (Drupal core module) | Receives pushed report profiles; renders public pages |
@@ -134,7 +134,7 @@ A hierarchical taxonomy. Top-level categories might be "Department", "Topic", or
 
 ### 4.1 Backend — Node.js API Server
 
-Built with Express and TypeScript. Prisma ORM manages PostgreSQL access with type-safe queries and schema migrations. The API follows REST conventions with JSON request/response bodies.
+Built with Express and TypeScript. TypeORM manages database access with decorator-based entities, type-safe queries, and schema migrations. TypeORM supports both Oracle (production) and PostgreSQL (development) from the same entity code — the target database is selected via the `DB_TYPE` environment variable. The API follows REST conventions with JSON request/response bodies.
 
 #### Key API Endpoints
 
@@ -406,7 +406,7 @@ A phased approach allows you to deliver value quickly and add sophistication ove
 
 ### Phase 1 — Foundation (Weeks 1–4)
 
-- Set up Node.js + Express + TypeScript project with Prisma and PostgreSQL
+- Set up Node.js + Express + TypeScript project with TypeORM, targeting Oracle (production) and PostgreSQL (development)
 - Define and migrate the core schema: Report, DataField, Category, junction tables
 - Build CRUD REST API with Okta JWT authentication
 - Build React SPA shell: routing, layout, admin form for creating/editing reports
@@ -454,9 +454,9 @@ A phased approach allows you to deliver value quickly and add sophistication ove
 | Frontend | React Query (TanStack) | Server state + caching | Replaces Redux for API data |
 | Frontend | Elastic Search UI (optional) | Search components | Pre-built facet/result UI |
 | Backend | Node.js 22 + Express | REST API server | TypeScript throughout |
-| Backend | Prisma ORM | DB access + migrations | Type-safe queries |
+| Backend | TypeORM + oracledb / pg | DB access + migrations | Supports Oracle and PostgreSQL from same entity code |
 | Backend | BullMQ + Redis | Async job queue | Elastic sync, Drupal publish |
-| Database | PostgreSQL 16 | Source of truth | pgvector for embeddings |
+| Database | Oracle (prod) / PostgreSQL (dev) | Source of truth | Switched via `DB_TYPE` env var |
 | Search | Elastic Cloud (existing) | Full-text + kNN search | `@elastic/elasticsearch` client |
 | Embeddings | OpenAI text-embedding-3-small | Semantic search vectors | Or Elastic ELSER (built-in) |
 | CMS | Drupal 10 JSON:API | Publish report pages | Auth via Okta Bearer tokens |

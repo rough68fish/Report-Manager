@@ -1,0 +1,40 @@
+{
+  "name": "report-catalog-api",
+  "version": "1.0.0",
+  "description": "Report & Dashboard Catalog — API Server",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "migration:generate:pg": "typeorm-ts-node-commonjs migration:generate -d src/database/datasource.ts src/migrations/migration",
+    "migration:run:pg": "DB_TYPE=postgres typeorm-ts-node-commonjs migration:run -d src/database/datasource.ts",
+    "migration:run:oracle": "DB_TYPE=oracle typeorm-ts-node-commonjs migration:run -d src/database/datasource.ts",
+    "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/database/datasource.ts",
+    "schema:sync": "typeorm-ts-node-commonjs schema:sync -d src/database/datasource.ts"
+  },
+  "dependencies": {
+    "@okta/jwt-verifier": "^3.0.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "oracledb": "^6.5.0",
+    "pg": "^8.13.0",
+    "reflect-metadata": "^0.2.2",
+    "slugify": "^1.6.6",
+    "typeorm": "^0.3.20",
+    "uuid": "^11.0.3",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.9.0",
+    "@types/uuid": "^10.0.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}
