@@ -1,0 +1,9 @@
+name: 'Okta Bearer Auth'
+type: module
+description: 'Validates Okta access tokens for JSON:API and REST authentication. Introspects Bearer tokens against Okta and maps valid tokens to a Drupal API service account.'
+core_version_requirement: ^10
+package: Custom
+
+dependencies:
+  - drupal:user
+  - drupal:system

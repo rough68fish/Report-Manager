@@ -1,0 +1,14 @@
+services:
+  authentication.okta_bearer:
+    class: Drupal\okta_bearer_auth\Authentication\Provider\OktaBearerAuth
+    arguments:
+      - '@config.factory'
+      - '@entity_type.manager'
+      - '@http_client'
+      - '@logger.channel.okta_bearer_auth'
+    tags:
+      - { name: authentication_provider, provider_id: okta_bearer, global: TRUE }
+
+  logger.channel.okta_bearer_auth:
+    parent: logger.channel_base
+    arguments: ['okta_bearer_auth']

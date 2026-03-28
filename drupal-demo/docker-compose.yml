@@ -1,0 +1,57 @@
+services:
+
+  drupal:
+    build: .
+    container_name: report_catalog_drupal
+    ports:
+      - "8080:80"
+    environment:
+      DRUPAL_DB_HOST: mariadb
+      DRUPAL_DB_PORT: 3306
+      DRUPAL_DB_NAME: ${MYSQL_DATABASE}
+      DRUPAL_DB_USER: ${MYSQL_USER}
+      DRUPAL_DB_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - drupal_modules:/var/www/html/web/modules/contrib
+      - drupal_profiles:/var/www/html/web/profiles
+      - drupal_themes:/var/www/html/web/themes
+      - drupal_sites:/var/www/html/web/sites
+      - ./config:/var/www/html/config
+      - ./custom-modules:/var/www/html/web/modules/custom
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mariadb:
+    image: mariadb:10.11
+    container_name: report_catalog_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  adminer:
+    image: adminer:latest
+    container_name: report_catalog_adminer
+    ports:
+      - "8082:8080"
+    depends_on:
+      - mariadb
+    restart: unless-stopped
+
+volumes:
+  drupal_modules:
+  drupal_profiles:
+  drupal_themes:
+  drupal_sites:
+  mariadb_data:
