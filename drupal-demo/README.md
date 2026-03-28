@@ -150,7 +150,7 @@ DRUPAL_API_PASSWORD=admin_password123
 DRUPAL_CONTENT_TYPE=report_profile
 ```
 
-For production, replace Basic Auth with OAuth 2.0 using the **Simple OAuth** module.
+For production, authentication uses Okta Bearer tokens via the `okta_bearer_auth` module. See `OKTA_SETUP.md` for setup instructions.
 
 ---
 
