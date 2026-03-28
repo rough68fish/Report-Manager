@@ -1,0 +1,19 @@
+okta_bearer_auth.settings:
+  type: config_object
+  label: 'Okta Bearer Auth settings'
+  mapping:
+    okta_domain:
+      type: string
+      label: 'Okta domain (e.g. https://dev-xxx.okta.com)'
+    api_client_id:
+      type: string
+      label: 'API Services app Client ID'
+    api_client_secret:
+      type: string
+      label: 'API Services app Client Secret'
+    auth_server:
+      type: string
+      label: 'Authorization server ID (default: default)'
+    service_account_name:
+      type: string
+      label: 'Drupal username to authenticate as when token is valid'
