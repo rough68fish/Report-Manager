@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Report Catalog', () => {
-  test('shows the catalog page after login', async ({ page }) => {
+test.describe('Report Catalog e2e-RC', () => {
+  test('e2e-RC-1 shows the catalog page after login', async ({ page }) => {
     await page.goto('/');
 
     await expect(page.getByRole('heading', { name: 'Report Catalog' })).toBeVisible();
@@ -9,7 +9,7 @@ test.describe('Report Catalog', () => {
     await expect(page.getByRole('combobox')).toBeVisible(); // type filter
   });
 
-  test('displays report cards', async ({ page }) => {
+  test('e2e-RC-2 displays report cards', async ({ page }) => {
     await page.goto('/');
 
     // Wait for the report count to appear (data has loaded)
@@ -20,7 +20,7 @@ test.describe('Report Catalog', () => {
     await expect(cards.first()).toBeVisible();
   });
 
-  test('search filters the results', async ({ page }) => {
+  test('e2e-RC-3 search filters the results', async ({ page }) => {
     await page.goto('/');
 
     await expect(page.getByText(/\d+ reports?/)).toBeVisible({ timeout: 10000 });
