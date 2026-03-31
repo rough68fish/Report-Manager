@@ -1,3 +1,6 @@
+# ignore node modules
+node_modules/
+
 # ignore the Drupal demo configuration directory and environment file
 drupal-demo/config/
 drupal-demo/.env
