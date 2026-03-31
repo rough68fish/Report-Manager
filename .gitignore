@@ -1,7 +1,16 @@
+# Report Manager Node Application
 # ignore node modules
 node_modules/
+app/e2e/.auth/
+app/e2e/debug*.png
 
+# Drupal demo configuration and environment files
 # ignore the Drupal demo configuration directory and environment file
 drupal-demo/config/
 drupal-demo/.env
+
+
 .env
+.env.playwright
+
+
