@@ -30,6 +30,40 @@ const reportSchema = z.object({
 
 const reportRepo = () => AppDataSource.getRepository(Report);
 
+/**
+ * @swagger
+ * /api/reports:
+ *   get:
+ *     tags: [Reports]
+ *     summary: List reports
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema: { type: string }
+ *         description: Search title, description, and department
+ *       - in: query
+ *         name: status
+ *         schema: { type: string, enum: [draft, published, archived] }
+ *       - in: query
+ *         name: type
+ *         schema: { type: string, enum: [bi_dashboard, pdf_report, web_report, sql_extract] }
+ *       - in: query
+ *         name: department
+ *         schema: { type: string }
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20, maximum: 100 }
+ *     responses:
+ *       200:
+ *         description: Paginated list of reports
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedReports'
+ */
 // GET /api/reports
 router.get('/', requireAuth, async (req, res, next) => {
   try {
@@ -67,6 +101,34 @@ router.get('/', requireAuth, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/reports/{id}:
+ *   get:
+ *     tags: [Reports]
+ *     summary: Get a report by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       200:
+ *         description: Report
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Report'
+ *       404:
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // GET /api/reports/:id
 router.get('/:id', requireAuth, async (req, res, next) => {
   try {
@@ -81,6 +143,29 @@ router.get('/:id', requireAuth, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/reports:
+ *   post:
+ *     tags: [Reports]
+ *     summary: Create a report
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ReportInput'
+ *     responses:
+ *       201:
+ *         description: Created report
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Report'
+ */
 // POST /api/reports
 router.post('/', requireAuth, async (req, res, next) => {
   try {
@@ -128,6 +213,40 @@ router.post('/', requireAuth, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/reports/{id}:
+ *   patch:
+ *     tags: [Reports]
+ *     summary: Update a report
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ReportInput'
+ *     responses:
+ *       200:
+ *         description: Updated report
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Report'
+ *       404:
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // PATCH /api/reports/:id
 router.patch('/:id', requireAuth, async (req, res, next) => {
   try {
@@ -190,6 +309,31 @@ router.patch('/:id', requireAuth, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/reports/{id}:
+ *   delete:
+ *     tags: [Reports]
+ *     summary: Archive a report (soft delete — sets status to archived)
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       200:
+ *         description: Archived
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id: { type: string }
+ *                     status: { type: string }
+ */
 // DELETE /api/reports/:id (soft delete — sets status to archived)
 router.delete('/:id', requireAuth, async (req, res, next) => {
   try {

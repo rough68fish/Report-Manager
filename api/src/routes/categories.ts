@@ -16,6 +16,26 @@ const categorySchema = z.object({
 
 const repo = () => AppDataSource.getRepository(Category);
 
+/**
+ * @swagger
+ * /api/categories:
+ *   get:
+ *     tags: [Categories]
+ *     summary: List categories (full tree)
+ *     description: Returns top-level categories with nested children.
+ *     responses:
+ *       200:
+ *         description: Category tree
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Category'
+ */
 // Returns the full tree: top-level categories with nested children
 router.get('/', requireAuth, async (req, res, next) => {
   try {
@@ -30,6 +50,34 @@ router.get('/', requireAuth, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/categories/{id}:
+ *   get:
+ *     tags: [Categories]
+ *     summary: Get a category by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       200:
+ *         description: Category with parent and children
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Category'
+ *       404:
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.get('/:id', requireAuth, async (req, res, next) => {
   try {
     const cat = await repo().findOne({
@@ -43,6 +91,29 @@ router.get('/:id', requireAuth, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/categories:
+ *   post:
+ *     tags: [Categories]
+ *     summary: Create a category
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CategoryInput'
+ *     responses:
+ *       201:
+ *         description: Created category
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Category'
+ */
 router.post('/', requireAuth, async (req, res, next) => {
   try {
     const body = categorySchema.parse(req.body);
@@ -54,6 +125,34 @@ router.post('/', requireAuth, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/categories/{id}:
+ *   patch:
+ *     tags: [Categories]
+ *     summary: Update a category
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CategoryInput'
+ *     responses:
+ *       200:
+ *         description: Updated category
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Category'
+ */
 router.patch('/:id', requireAuth, async (req, res, next) => {
   try {
     const body = categorySchema.partial().parse(req.body);
@@ -69,6 +168,21 @@ router.patch('/:id', requireAuth, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/categories/{id}:
+ *   delete:
+ *     tags: [Categories]
+ *     summary: Delete a category
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       204:
+ *         description: Deleted
+ */
 router.delete('/:id', requireAuth, async (req, res, next) => {
   try {
     await repo().delete(req.params.id);
